@@ -1,9 +1,15 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
-
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+source 'https://rubygems.org'
 
 # gem "rails"
-gem 'sinatra'
 gem 'puma'
+gem 'rack-test'
+gem 'rspec'
+gem 'sinatra'
+
+# Add Rubocop for linting and style checks
+group :development do
+  gem 'rubocop', require: false
+  gem 'rubocop-rspec', require: false
+end
