@@ -1,2 +1,2 @@
 #!/bin/bash
-bundle exec ruby app.rb
+bundle exec rackup -s puma

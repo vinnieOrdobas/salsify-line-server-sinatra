@@ -29,7 +29,7 @@ RSpec.configure do |config|
 
   # Define the Sinatra app for testing
   def app
-    Sinatra::Application
+    App
   end
 end
 
