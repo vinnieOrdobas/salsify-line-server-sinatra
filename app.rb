@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# app.rb
 require 'sinatra'
 require 'json'
 require './pre_processor'

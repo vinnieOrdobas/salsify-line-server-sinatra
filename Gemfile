@@ -7,6 +7,8 @@ gem 'puma'
 gem 'rack-test'
 gem 'rspec'
 gem 'sinatra'
+gem 'pry'
+gem 'pry-byebug'
 
 # Add Rubocop for linting and style checks
 group :development do
