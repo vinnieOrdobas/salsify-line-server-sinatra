@@ -16,6 +16,8 @@
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'rack/handler/puma'
+require 'puma'
 require 'rack/test'
 require 'rspec'
 require 'pry'
@@ -23,13 +25,26 @@ require_relative '../app'
 
 ENV['RACK_ENV'] = 'test'
 
-# Include Rack::Test methods in your specs
+# Include Rack::Test methods in specs
 RSpec.configure do |config|
   config.include Rack::Test::Methods
 
-  # Define the Sinatra app for testing
+  # Define the app for testing
   def app
-    App
+    App.new
+  end
+
+  # Puma config for thread specs
+  config.before(:suite) do
+    puts "Starting Puma with App: #{App.inspect}"
+    @server_thread = Thread.new do
+      Rack::Handler::Puma.run(App, Port: 9292)
+    end
+    sleep 1
+  end
+
+  config.after(:suite) do
+    @server_thread.kill if @server_thread
   end
 end
 

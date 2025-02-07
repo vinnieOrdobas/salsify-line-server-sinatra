@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'puma'
+require 'net/http'
+require 'uri'
 
 RSpec.describe 'Line Server API' do # rubocop:disable Metrics/BlockLength
   subject(:do_action) { get "/lines/#{line_index}" }
@@ -44,24 +45,26 @@ RSpec.describe 'Line Server API' do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe 'Stress test API with Puma' do
-    let(:line_index) { 0 }
-    let(:server) { Puma::Server.new(app) }
-    
+  describe 'Handling multiple concurrent requests' do
     it 'handles concurrent requests' do
-      server.add_tcp_listener '127.0.0.1', 9292
-      server.run
-
       threads = []
-      10.times do
+      results = []
+
+      5.times do |i|
         threads << Thread.new do
-          do_action
-          expect(last_response.status).to eq(200)
+          uri = URI("http://localhost:9292/lines/#{i}")
+          results << Net::HTTP.get(uri)
         end
       end
 
       threads.each(&:join)
-      server.stop(true)
+
+      results.each do |result|
+        result = JSON.parse(result)
+        expect(result).to include('title', 'line')
+        expect(result['line']).to be_a(String)
+        expect(result['title']).to eq('Poème sur le désastre de Lisbonne')
+      end
     end
   end
 end
